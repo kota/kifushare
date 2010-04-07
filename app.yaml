@@ -10,5 +10,13 @@ handlers:
 - url: /sample.kif(.*)
   static_files: sample.kif
   upload: sample.kif
+  mime_type: text/html
+- url: /stylesheets
+  static_dir: stylesheets
+- url: /kifudir
+  static_dir: kifudir
+  mime_type: text/plain
+- url: /js
+  static_dir: js
 - url: .*
   script: main.py

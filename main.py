@@ -81,7 +81,7 @@ class PlayerHandler(webapp.RequestHandler):
 def main():
   application = webapp.WSGIApplication([('/', MainHandler),
                                         ('/upload',UploadHandler),
-                                        (r'/kifu/(.*)',KifuHandler),
+                                        (r'/kifu/(.*).kifu',KifuHandler),
                                         ('/player',PlayerHandler),
                                        ],debug=True)
   util.run_wsgi_app(application)

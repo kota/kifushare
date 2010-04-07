@@ -11,12 +11,15 @@
       <div><label for="id_kifuname">Name:</label> <input type="text" name="kifuname" id="id_kifuname" /></div>
       <div><input type="submit" value="Upload" /></div>
     </form>
+    <table>
     {% if kifulist %}
-      <ul>
         {% for kifu in kifulist %}
-          <li><a href="/kifu?id={{kifu.key.id}}">{{ kifu.name|escape }}</a></li>
+          <tr>
+            <th>{{ kifu.name|escape }}</th>
+            <td><a href="/player?kifuid={{kifu.key.id}}">再生</a>&nbsp;<a href="/kifu/{{kifu.key.id}}.kifu">表示</a></td>
+          </tr>
         {% endfor %}
-      </ul>
     {% endif %}
+    </table>
   </body>
 </html>
