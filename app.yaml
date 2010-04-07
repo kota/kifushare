@@ -1,0 +1,14 @@
+application: kifushare
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /Kifu.swf
+  static_files: Kifu.swf
+  upload: Kifu.swf
+- url: /sample.kif(.*)
+  static_files: sample.kif
+  upload: sample.kif
+- url: .*
+  script: main.py
