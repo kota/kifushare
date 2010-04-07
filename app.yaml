@@ -7,10 +7,6 @@ handlers:
 - url: /Kifu.swf
   static_files: Kifu.swf
   upload: Kifu.swf
-- url: /sample.kif(.*)
-  static_files: sample.kif
-  upload: sample.kif
-  mime_type: text/html
 - url: /stylesheets
   static_dir: stylesheets
 - url: /kifudir

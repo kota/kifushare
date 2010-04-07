@@ -52,7 +52,10 @@ class UploadHandler(webapp.RequestHandler):
     if not user:
       return self.redirect('/')
     kifu = Kifu(author=user)
-    kifu.contents = unicode(file_data,'sjis')
+    contents = unicode(file_data,'sjis')
+    if contents.find("\r") > 0:
+      contents = "\r\n".join(map(lambda line:line.rstrip("\r"),contents.split("\r")))
+    kifu.contents = contents
     kifu.name = unicode(self.request.get('kifuname'))
     kifu.put()
     return self.redirect('/')
