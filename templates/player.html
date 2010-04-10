@@ -1,9 +1,10 @@
-<html>
-  <head>
-    <title>KifuShare</title>
-    <script type="text/javascript" src="/js/swfobject.js"></script>
-  </head>
-  <body>
+{% extends "base.html" %}
+{% block title %}棋譜再生{% endblock %}
+{% block javascript %}<script type="text/javascript" src="/js/swfobject.js"></script>{% endblock %}
+
+{% block content %}
+  <br/>
+  <p>{{ comment|escape }}</p>
   <div id="flashcontent">
   </div>
 <script type="text/javascript">
@@ -16,5 +17,5 @@ so.addVariable("minute", "1");
 so.addVariable("comment_line", "10");
 so.write("flashcontent");
 </script>
-  </body>
-</html>
+
+{% endblock %}

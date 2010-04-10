@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock %}
+{% block content %}
+    {% if not user %}
+      <p>棋譜をアップロードするにはログインしてください。Googleのアカウントでログインできます。</p>
+      <a href="{{ login_link|fix_ampersands }}">ログイン</a>
+    {% else %}
+      <a href="/upload">棋譜をアップロードする</a>
+      <a href="{{ logout_link|fix_ampersands }}">ログアウト</a>
+    {% endif %}
+    <table style="border:1px solid;width:400px;text-align:center;">
+      <tr><th>棋譜名</th><th>投稿者</th><th>操作</th><tr>
+    {% if kifulist %}
+        {% for kifu in kifulist %}
+          <tr>
+            <td>{{ kifu.name|escape }}</td>
+            <td>{{ kifu.author_name|escape }}</td>
+            <td>
+              <a href="/player?kifuid={{kifu.key.id}}">再生</a>&nbsp;
+              <a href="/kifu/{{kifu.key.id}}.kifu">表示</a>
+              {% ifequal user kifu.author %}
+                &nbsp;<a href="#" onclick="if(confirm('棋譜を削除してよろしいですか？')){location.href='/deletekifu/{{kifu.key.id}}'}">削除</a>
+
+              {% endifequal %}
+            </td>
+          </tr>
+        {% endfor %}
+    {% endif %}
+    </table>
+{% endblock %}

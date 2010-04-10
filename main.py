@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 import os
+import logging
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
@@ -23,13 +24,16 @@ from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.ext.webapp import template
 
+
 class Kifu(db.Model):
     name = db.StringProperty()
     mime = db.StringProperty()
     comment = db.StringProperty(multiline=True)
     size = db.IntegerProperty()
     contents = db.TextProperty()
+    comment = db.TextProperty()
     author = db.UserProperty()
+    author_name = db.StringProperty()
     created_at = db.DateTimeProperty(auto_now_add=True)
 
 class MainHandler(webapp.RequestHandler):
@@ -40,9 +44,10 @@ class MainHandler(webapp.RequestHandler):
     template_values = {
       'user': user,
       'kifulist': kifulist,
-      'login_link': users.create_login_url('/')
+      'login_link': users.create_login_url('/'),
+      'logout_link': users.create_logout_url('/')
     }
-    tpl = os.path.join(os.path.dirname(__file__),'main.html')
+    tpl = os.path.join(os.path.dirname(__file__),'templates','main.html')
     self.response.out.write(template.render(tpl, template_values))
 
 class UploadHandler(webapp.RequestHandler):
@@ -57,34 +62,55 @@ class UploadHandler(webapp.RequestHandler):
       contents = "\r\n".join(map(lambda line:line.rstrip("\r"),contents.split("\r")))
     kifu.contents = contents
     kifu.name = unicode(self.request.get('kifuname'))
+    kifu.author_name = unicode(self.request.get('authorname'))
+    kifu.comment = unicode(self.request.get('comment'))
     kifu.put()
     return self.redirect('/')
 
+  def get(self):
+    tpl = os.path.join(os.path.dirname(__file__),'templates','upload.html')
+    self.response.out.write(template.render(tpl, {}))
 
 class KifuHandler(webapp.RequestHandler):
   def get(self,kifuid):
-    id = kifuid#self.request.get('id')
-    if not id:
+    if not kifuid:
       return self.redirect('/')
     
-    kifu = Kifu.get_by_id(int(id))
+    kifu = Kifu.get_by_id(int(kifuid))
     self.response.out.write(kifu.contents)
-
+  
+class DeleteKifuHandler(webapp.RequestHandler):
+  def get(self,kifuid):
+    if not kifuid:
+      return self.redirect('/')
+    
+    kifu = Kifu.get_by_id(int(kifuid))
+    if kifu.author == users.get_current_user():
+      kifu.delete()
+    return self.redirect('/')
+  
 class PlayerHandler(webapp.RequestHandler):
   def get(self):
     kifuid = self.request.get('kifuid')
-    if not id:
+    if not kifuid:
       return self.redirect('/')
+
+    kifu = Kifu.get_by_id(int(kifuid))
+    comment = ''
+    if kifu and kifu.comment:
+      comment = kifu.comment
     template_values = {
       'kifuid': kifuid,
+      'comment': comment
     }
-    tpl = os.path.join(os.path.dirname(__file__),'player.html')
+    tpl = os.path.join(os.path.dirname(__file__),'templates','player.html')
     self.response.out.write(template.render(tpl, template_values))
 
 def main():
   application = webapp.WSGIApplication([('/', MainHandler),
                                         ('/upload',UploadHandler),
                                         (r'/kifu/(.*).kifu',KifuHandler),
+                                        (r'/deletekifu/(.*)',DeleteKifuHandler),
                                         ('/player',PlayerHandler),
                                        ],debug=True)
   util.run_wsgi_app(application)
